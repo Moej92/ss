@@ -1,0 +1,160 @@
+doctype html
+html
+    head
+        include includes/meta.pug
+        link(rel='stylesheet' href='/css/header.css')
+        link(rel='stylesheet', href='/css/profile.css')
+        title= authenticated_username
+    body
+        include includes/header.pug
+        if profileInfo
+            .profile-container
+                .info-section
+                    .avatar-holder 
+                        img.profile-avatar(src= profileInfo.avatar)
+                    h2.profile-username= profileInfo.username
+                    p.profile-bio= profileInfo.bio
+                    .profile-actions
+                        div.profile-action(tabindex='0')
+                                i.action-icon.popup-btn.share-profile-icon
+                                    include ../icons/share-icon.html
+                                span.action-name Share profile 
+                        if profileInfo.profile === 'main user profile' 
+                            a.profile-action(href='#')
+                                i.action-icon 
+                                    include ../icons/find-friend-icon.html
+                                span.action-name Find friends
+                            .profile-action(href='/settings/edit-profile')
+                                i.action-icon.popup-btn.edit-profile-icon
+                                    include ../icons/edit-profile-icon.html
+                                span.action-name Edit profile
+                        else 
+                            form(method='POST' class='request-form')
+                                input(type='hidden' name='main_userID' value= main_userID)
+                                input(type='hidden' name='main_username' value= main_username)
+                                input(type='hidden' name='requested_userID' value= profileInfo._id)
+                                input(type='hidden' name='requested_username' value= profileInfo.username)
+                                if profileInfo.profile === 'friend profile'
+                                    .popup-menu.unfriend-menu
+                                        .section-top-row.title-row
+                                            h2.section-title Unfriend #{profileInfo.username} 
+                                            i.close-menu
+                                                include ../icons/xmark-icon.html
+                                        p.confirmation-text Are you sure you want to remove #{profileInfo.username} as your friend?
+                                        input(type='submit' class='confirm-unfriend' value='Confirm' formaction='/request/remove-friend')
+                                    .profile-action(tabindex='0')
+                                        i.action-icon.friend-icon.popup-btn
+                                            include ../icons/friend-icon.html
+                                        span.action-name Friend
+                                    a.profile-action(href="#")
+                                        i.action-icon 
+                                            include ../icons/message-icon.html 
+                                        span.action-name Send message
+                                
+                                else if profileInfo.profile === 'non friend profile'
+                                    .profile-action(tabindex='0')
+                                        i.action-icon.action.add-friend
+                                            include ../icons/add-friend-icon.html
+                                        span.action-name Add friend
+
+                                else if profileInfo.profile === 'sent friend request profile'
+                                    .profile-action(tabindex='0')
+                                        i.action-icon.action.cancel-request 
+                                            include ../icons/cancel-friend-request-icon.html
+                                        span.action-name Cancel request 
+
+                                else if profileInfo.profile === 'received friend request profile'
+                                    div.profile-action(tabindex='0')
+                                        i.action-icon.action.confirm-request 
+                                            include ../icons/confirm-friend-request-icon.html
+                                        span.action-name Confirm request
+                                    div.profile-action(tabindex='0')
+                                        i.action-icon.action.reject-request 
+                                            include ../icons/cancel-friend-request-icon.html
+                                        span.action-name Reject request
+
+                //- Friends
+                if friends.length
+                    .friends-section 
+                        .section-top-row 
+                            h2.section-title Friends 
+                                span.friend-count (#{friends.length})
+                            if friends.length > 5
+                                if main_username === profileInfo.username
+                                    a.see-all-friends(href='/friends') see all friends
+                                else 
+                                    a.see-all-friends(href='/' + profileInfo.username + '/friends') see all friends
+                        .friends 
+                            each friend in friends
+                                .friend
+                                    .friend-avatar-holder
+                                        img.friend-avatar(src= friend.avatar)
+                                    .friend-info
+                                        h3.friend-username= friend.username 
+                                        p.friend-bio= friend.bio
+                                        .friend-actions 
+                                            a.view-friend-profile.friend-action(href="/profile/" + friend.username) visit profile
+                                            if friend.isFriend
+                                                a.open-friend-chat.friend-action(href='#') open chat
+
+                //- Suggested Friends
+                if profileInfo.username === main_username
+                    .suggested-friends-section
+                        .section-top-row 
+                            h2.section-title Suggested Friends
+                        .suggested-friends 
+                            each user in suggestedFriends 
+                                .suggested-friend
+                                    .sf-avatar-holder 
+                                        img.sf-avatar(src= user.avatar)
+                                    h3.sf-username= user.username
+                                    p.sf-bio= user.bio
+                                    a.sf-view-profile(href='/profile/' + user.username) view profile
+                            .carousel-left.carousel-arrow
+                                i.left-arrow.arrow-icon 
+                                    include ../icons/arrow-left-icon.html
+                            .carousel-right.carousel-arrow
+                                i.right-arrow.arrow-icon 
+                                    include ../icons/arrow-right-icon.html
+                            
+
+            .share-profile-menu.popup-menu
+                .section-top-row.title-row
+                    h2.section-title Share Profile
+                    i.close-menu
+                            include ../icons/xmark-icon.html
+                .share 
+                    input(type='text' class='page-url')
+                    input(type='button' class='copy-url' value='Copy')
+                script(src='/javascript/client-share-profile.js' defer) 
+
+            if main_username === profileInfo.username
+                .edit-profile-menu.popup-menu
+                    .section-top-row.title-row 
+                        h2.section-title Edit Profile
+                        i.close-menu
+                            include ../icons/xmark-icon.html
+                    form(action='/edit-profile/update-avatar' method='POST' class='edit-form' enctype='multipart/form-data')    
+                        h3 Change Avatar
+                        .avatar-holder
+                            img(src= main_avatar class='current-avatar')
+                            label(for='upload-avatar' class='upload-label')
+                                include ../icons/add-img-icon.html
+                        input(type='file' id='upload-avatar' name='upload_avatar' class='file-input' required)
+                        p.upload-status No file chosen
+                        p.errMsg= fileErr
+                        button.edit-btn#upload-btn update avatar
+                        
+                    hr
+
+                    form(action='/edit-profile/update-bio' method='POST' class='edit-form')
+                        h3 Change Bio
+                        input(type='text' class='bio-input' name='bio' value= profileInfo.bio required)
+                        input(type='submit' class='edit-btn' value='update bio')
+                    hr
+                    script(src='/javascript/client-edit-profile.js' defer)
+
+        else 
+            h2 No Such Profile 
+        script(src='/javascript/client-profile.js' defer) 
+                

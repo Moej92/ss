@@ -1,0 +1,65 @@
+header 
+    .logo-holder
+        a(href='/profile')
+            img.logo(src='/app-images/logo.png') 
+    nav
+        ul.nav-icons 
+            li.nav-icon
+                a.nav-link(href='/chat')
+                    include ../../icons/chat-icon.html 
+            li.nav-icon(tabindex=0)
+                include ../../icons/notification-icon.html
+                if receivedNotifications.some(r => r.unread)
+                    .notification-alert-mark
+                .notification-menu.nav-list
+                    h3.menu-title Notifications
+                    .notification-tabs
+                        span.tab#received-requests Received requests
+                        span.tab#sent-requests Sent requests
+                    .notifications.received-requests 
+                        if receivedNotifications.length
+                            each request in receivedNotifications
+                                div(
+                                    class= request.unread ? 'notification unread' : 'notification' 
+                                    data-main_username= main_username 
+                                    data-notification_userID= request.id 
+                                    data-notification_username= request.username
+                                )
+                                    img.notification-avatar(src= request.avatar)
+                                    .notification-info
+                                        p.notification-username= request.username
+                                        p.notification-desc send you a friend request
+                                        p.notification-date= request.date
+                                    if request.unread 
+                                        span.unread-mark
+                        else 
+                            p.empty Empty
+
+                    .notifications.sent-requests 
+                        if sentNotifications.length
+                            each request in sentNotifications 
+                                .notification(data-main_username= main_username data-notification_username= request.username)
+                                    img.notification-avatar(src= request.avatar)
+                                    .notification-info
+                                        p.notification-username= request.username
+                                        p.notification-desc you send a friend request
+                                        p.notification-date= request.date   
+                        else 
+                            p.empty Empty   
+                        
+            li.nav-icon(tabindex=0)
+                include ../../icons/user-icon.html
+                .nav-list
+                    a.main-user(href='/profile')   
+                        img.main-avatar(src= main_avatar)
+                        h3.main-username= main_username
+                    a.settings.list-link(href='/account-settings')
+                        include ../../icons/account-settings-icon.html
+                        span Account settings
+                    a.logout.list-link(href='/logout')
+                        include ../../icons/logout-icon.html
+                        span Logout
+    
+    script(src='/javascript/client-notification.js' defer)
+
+                

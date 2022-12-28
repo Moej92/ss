@@ -1,0 +1,30 @@
+doctype html
+html
+    head
+        include includes/meta.pug
+        link(rel='stylesheet' href='/css/header.css')
+        link(rel='stylesheet', href='/css/profile.css')
+        title= authenticated_username
+    body 
+        include includes/header.pug
+        .profile-container
+            .friends-section 
+                .section-top-row 
+                    h2.section-title Friends 
+                        span.friend-count (#{friends.length})
+                    .search 
+                        i.search-icon
+                            include ../icons/search-icon.html
+                        input.search-bar.search-friend(type='text' placeholder='search friend')
+                .friends.all-friends 
+                    each friend in friends
+                        .friend
+                            .friend-avatar-holder
+                                img.friend-avatar(src= friend.avatar)
+                            .friend-info
+                                h3.friend-username= friend.username 
+                                p.friend-bio= friend.bio
+                                .friend-actions 
+                                    a.view-friend-profile.friend-action(href="/profile/" + friend.username) visit profile
+                                    a.open-friend-chat.friend-action(href='#') open chat
+        p#data= JSON.stringify(friends)

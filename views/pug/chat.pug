@@ -1,0 +1,70 @@
+doctype html
+html
+    head
+        include includes/meta.pug
+        link(rel='stylesheet' href='/css/header.css')
+        link(rel='stylesheet', href='/css/chat.css')
+        title Chat
+    body
+        include includes/header.pug
+        .chat-container
+            .selected-chat(tabindex='0')
+                .avatar-holder
+                    img.selected-avatar.friend-avatar(src= main_avatar)
+                h3.selected-username.friend-username= main_username
+                i.dropdown-icon 
+                    include ../icons/dropdown-icon.html
+
+            .chat-list
+                .chat-search 
+                    i.search-icon
+                        include ../icons/search-icon.html
+                    input(type='text' id='search-chat' placeholder='search chat') 
+                .chat-friends 
+                    each friend in chatFriends 
+                        a.chat-friend(href='/chat/' + friend.id) 
+                            .avatar-holder 
+                                img.friend-avatar(src= friend.avatar)
+                            h3.friend-username= friend.username
+            
+            .chat-messages 
+                .message Hello! 
+                .message hey
+                .message How are you
+                .message Hello! 
+                .message hey
+                .message How are you
+                .message Hello! 
+                .message hey
+                .message How are you
+                .message Hello! 
+                .message hey
+                .message How are you
+                .message Hello! 
+                .message hey
+                .message How are you
+
+                .message Hello! 
+                .message hey
+                .message How are you
+                .message Hello! 
+                .message hey
+                .message How are you
+
+                .message Hello! 
+                .message hey
+                .message How are you
+
+
+            .chat-form 
+                input(type='text' class='message' placeholder='Aa')
+                i.like-icon 
+                    include ../icons/like-icon.html
+
+
+
+                    
+
+        script(src='/javascript/client-chat.js' defer) 
+
+

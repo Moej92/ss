@@ -1,0 +1,41 @@
+doctype html
+html
+    head
+        include includes/meta.pug
+        link(rel='stylesheet' href='/css/header.css')
+        link(rel='stylesheet', href='/css/profile.css')
+        title Account Settings
+    body 
+        include includes/header.pug
+        .profile-container
+            .as-container 
+                h1.as-title Account Settings
+
+                form(action='/account-settings/change-username' class='as-form' method='POST')
+                    h2.form-title Change username
+                    .form-inputs
+                        p.curr-username current username: 
+                            u #{main_username}
+                        input(type='text' class='as-form-input' name='new_username' placeholder='new username' required) 
+                        i.as-icon
+                            include ../icons/user-icon.html
+                        .err-msg= nameErr
+                    button.as-update save
+                
+                form(action='/account-settings/change-password' class='as-form' method='POST')
+                    h2.form-title Change password 
+                    .form-inputs 
+                        input(type='password' class='as-form-input' name='current_password' placeholder='current password' required)
+                        i.as-icon
+                            include ../icons/password-icon.html
+                        input(type='password' class='as-form-input' name='new_password' placeholder='new password' required)
+                        i.as-icon
+                            include ../icons/password-icon.html
+                        .err-msg= passwordErr
+                    button.as-update save
+
+                form(action='/account-settings/delete-account' class='as-form' method='DELETE')
+                    h2.form-title Delete Account
+                    p.form-warning-text All informations and messages will be deleted
+                    button.as-update.confitm-delete Confirm
+
